@@ -1,0 +1,16 @@
+package dtos.user;
+
+import enums.UserType;
+import utils.ConsolePrinter;
+
+public class Customer extends User {
+  public Customer(String name, String password) {
+    super(name, password, UserType.CUSTOMER);
+  }
+
+  @Override
+  public void print() {
+    ConsolePrinter.println("Dados do cliente: ");
+    super.print(2);
+  }
+}
