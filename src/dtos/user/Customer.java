@@ -4,8 +4,8 @@ import enums.UserType;
 import utils.ConsolePrinter;
 
 public class Customer extends User {
-  public Customer(String name, String password) {
-    super(name, password, UserType.CUSTOMER);
+  public Customer(String email, String name, String password) {
+    super(UserType.CUSTOMER, email, name, password);
   }
 
   @Override

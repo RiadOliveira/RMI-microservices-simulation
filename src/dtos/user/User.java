@@ -9,17 +9,18 @@ import utils.ConsolePrinter;
 public abstract class User extends DTO {
   private final UUID id;
   private final UserType type;
-
-  private String name;
-  private String password;
+  private final String email;
+  private String name, password;
 
   public User(
-    String name, String password, UserType type
+    UserType type, String email,
+    String name, String password
   ) {
     this.id = UUID.randomUUID();
+    this.type = type;
+    this.email = email;
     this.name = name;
     this.password = password;
-    this.type = type;
   }
 
   @Override
@@ -31,10 +32,10 @@ public abstract class User extends DTO {
     String spaces = " ".repeat(spacesBefore);
 
     ConsolePrinter.println(spaces + "Id: " + id);
+    ConsolePrinter.println(spaces + "Email: " + email);
     ConsolePrinter.println(spaces + "Nome: " + name);
     ConsolePrinter.println(spaces + "Senha: " + password);
   }
-
 
   public UUID getId() {
     return id;
@@ -42,6 +43,10 @@ public abstract class User extends DTO {
 
   public UserType getType() {
     return type;
+  }
+
+  public String getEmail() {
+    return email;
   }
 
   public String getName() {

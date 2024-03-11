@@ -4,8 +4,8 @@ import enums.UserType;
 import utils.ConsolePrinter;
 
 public class Employee extends User {
-  public Employee(String name, String password) {
-    super(name, password, UserType.EMPLOYEE);
+  public Employee(String email, String name, String password) {
+    super(UserType.EMPLOYEE, email, name, password);
   }
 
   @Override
