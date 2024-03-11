@@ -7,28 +7,24 @@ import java.util.function.Consumer;
 
 import utils.ConsolePrinter;
 
-public class Client<T> implements Runnable {
+public class RMIClient<T> implements Runnable {
   private static final int WAIT_TIME_TO_TRY_RECONNECTION = 3;
   
-  private final String serverHost, serverName;
-  private final int serverPort;
-  private final Consumer<T> stubSetter;
+  private final ServerData serverData;
+  private final Consumer<T> stubAction;
 
-  public Client(
-    String serverHost, String serverName,
-    int serverPort, Consumer<T> stubSetter
+  public RMIClient(
+    ServerData serverData, Consumer<T> stubAction
   ) {
-    this.serverHost = serverHost;
-    this.serverName = serverName;
-    this.serverPort = serverPort;
-    this.stubSetter = stubSetter;
+    this.serverData = serverData;
+    this.stubAction = stubAction;
   }
 
   @Override
   public void run() {
     try {
       T stub = connectToServerWithRetry();
-      stubSetter.accept(stub);
+      stubAction.accept(stub);
     } catch (Exception exception) {
       ConsolePrinter.printlnError(
         "Falha ao conectar-se ao servidor!"
@@ -38,13 +34,15 @@ public class Client<T> implements Runnable {
 
   @SuppressWarnings("unchecked")
   private T connectToServerWithRetry() throws Exception {
+    String serverName = serverData.getName();
+
     ConsolePrinter.println(
       "Tentando conectar-se ao servidor " +
       serverName + "..."
     );
 
     Registry registry = LocateRegistry.getRegistry(
-      serverHost, serverPort
+      serverData.getHost(), serverData.getPort()
     );
     T stub = null;
 

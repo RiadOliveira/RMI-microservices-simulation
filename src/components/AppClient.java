@@ -1,6 +1,8 @@
 package components;
 
-import interfaces.IAppClient;
+import interfaces.IGateway;
 
-public class AppClient implements IAppClient {
+public class AppClient {
+  public void execute(IGateway gatewayServer) {
+  }
 }

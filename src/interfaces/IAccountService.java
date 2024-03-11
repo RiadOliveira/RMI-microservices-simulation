@@ -1,10 +1,11 @@
 package interfaces;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-import dtos.user.User;
+import dtos.DTO;
 
 public interface IAccountService extends Remote {
-  public void createAccount(User user) throws Exception;
-  public User authenticate(String email, String password) throws Exception;
+  public DTO createAccount(DTO user) throws RemoteException;
+  public DTO authenticate(DTO authData) throws RemoteException;
 }

@@ -1,47 +1,61 @@
 package components;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dtos.DTO;
+import dtos.generic.ExceptionDTO;
+import dtos.generic.MessageDTO;
+import dtos.user.AuthData;
 import dtos.user.User;
-import error.AppException;
 import interfaces.IAccountService;
+import utils.ObjectConverter;
 import utils.PasswordHasher;
 
 public class AccountService implements IAccountService {
   private final List<User> accountsDatabase = new ArrayList<>();
 
   @Override
-  public void createAccount(User user) throws Exception {
-    boolean existsByEmail = findByEmail(user.getEmail()) != null;
+  public DTO createAccount(DTO user) throws RemoteException {
+    User parsedDTO = ObjectConverter.convert(user);
+    if(parsedDTO == null) {
+      return new ExceptionDTO("Instância de DTO inválida!");
+    }
+
+    boolean existsByEmail = findByEmail(parsedDTO.getEmail()) != null;
     if(existsByEmail) {
-      throw new AppException(
+      return new ExceptionDTO(
         "Um usuário com esse e-mail já existe!"
       );
     }
 
-    user.setPassword(
-      PasswordHasher.hashAndEncode(user.getPassword())
+    parsedDTO.setPassword(
+      PasswordHasher.hashAndEncode(parsedDTO.getPassword())
     );
-    accountsDatabase.add(user);
+    accountsDatabase.add(parsedDTO);
+    return new MessageDTO("Conta criada com sucesso!");
   }
 
   @Override
-  public User authenticate(
-    String email, String password
-  ) throws Exception {
-    User findedUser = findByEmail(email);
+  public DTO authenticate(DTO authData) throws RemoteException {
+    AuthData parsedDTO = ObjectConverter.convert(authData);
+    if(parsedDTO == null) {
+      return new ExceptionDTO("Instância de DTO inválida!");
+    }
+
+    User findedUser = findByEmail(parsedDTO.getEmail());
     if(findedUser == null) {
-      throw new AppException(
+      return new ExceptionDTO(
         "Usuário requisitado não existe!"
       );
     }
 
     boolean validPassword = PasswordHasher.passwordsAreEqual(
-      findedUser.getPassword(), password
+      findedUser.getPassword(), parsedDTO.getPassword()
     );
     if(!validPassword) {
-      throw new AppException("Email ou senha inválido(s)!");
+      return new ExceptionDTO("Email ou senha inválido(s)!");
     }
 
     return findedUser;

@@ -7,12 +7,12 @@ import java.rmi.server.UnicastRemoteObject;
 
 import utils.ConsolePrinter;
 
-public class Server<T extends Remote> implements Runnable {
+public class RMIServer<T extends Remote> implements Runnable {
   private final T remoteObject;
   private final String name;
   private final int port;
 
-  public Server(T remoteObject, String name, int port) {
+  public RMIServer(T remoteObject, String name, int port) {
     this.remoteObject = remoteObject;
     this.name = name;
     this.port = port;
