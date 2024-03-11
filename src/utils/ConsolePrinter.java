@@ -24,6 +24,10 @@ public class ConsolePrinter {
     System.out.println(content);
   }
 
+  public static synchronized void printlnError(Object content) {
+    println(ERROR_PREFIX + content);
+  }
+
   public static synchronized void clearConsole() {
     print(CLEAR_CONSOLE);  
     System.out.flush();
