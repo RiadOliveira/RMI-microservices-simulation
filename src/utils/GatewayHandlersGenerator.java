@@ -10,60 +10,57 @@ import interfaces.IStoreService;
 
 public class GatewayHandlersGenerator {
   @FunctionalInterface
-  public interface ThrowingConsumer<T> {
-    void accept(T t) throws RemoteException;
+  public interface ThrowingConsumer {
+    DTO accept(DTO dto) throws RemoteException;
   }
 
-  public static HashMap<
-    AppOperation, ThrowingConsumer<DTO>
-  > generate(
+  public static HashMap<AppOperation, ThrowingConsumer> generate(
     IAccountService accountService, IStoreService storeService
   ) {
-    HashMap<
-      AppOperation, ThrowingConsumer<DTO>
-    > commandHandlers = new HashMap<>();
+    HashMap<AppOperation, ThrowingConsumer> operationHandlers = 
+      new HashMap<>();
 
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.CREATE_ACCOUNT,
       accountService::createAccount
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.AUTHENTICATE,
       accountService::authenticate
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.CREATE_CAR,
       null//storeService::createCar
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.UPDATE_CAR,
       null//storeService::updateCar
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.PATCH_CAR_QUANTITY,
       null//storeService::patchCarQuantity
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.DELETE_CAR,
       null//storeService::deleteCar
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.LIST_ALL_CARS,
       null//storeService::listAllCars
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.FIND_CAR,
       null//storeService::findCar
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.GET_QUANTITY_OF_CARS_STORED,
       null//storeService::getQuantityOfCarsStored
     );
-    commandHandlers.put(
+    operationHandlers.put(
       AppOperation.BUY_CAR,
       null//storeService::buyCar
     );
 
-    return commandHandlers;
+    return operationHandlers;
   }
 }

@@ -27,7 +27,8 @@ public class RMIClient<T> implements Runnable {
       stubAction.accept(stub);
     } catch (Exception exception) {
       ConsolePrinter.printlnError(
-        "Falha ao conectar-se ao servidor!"
+        "Falha ao conectar-se ao " +
+        serverData.getName() + "!"
       );
     } 
   }
@@ -37,8 +38,7 @@ public class RMIClient<T> implements Runnable {
     String serverName = serverData.getName();
 
     ConsolePrinter.println(
-      "Tentando conectar-se ao servidor " +
-      serverName + "..."
+      "Tentando conectar-se ao " + serverName + "..."
     );
 
     Registry registry = LocateRegistry.getRegistry(
@@ -55,15 +55,15 @@ public class RMIClient<T> implements Runnable {
     }
     
     ConsolePrinter.println(
-      "Servidor " + serverName +
-      " conectado com sucesso!\n"
+      "Servidor " + serverName + " conectado com sucesso!\n"
     );
     return stub;
   }
 
   private void waitToReconnect() {
     ConsolePrinter.println(
-      "Falha ao conectar-se ao servidor, tentando novamente em " +
+      "Falha ao conectar-se ao " + serverData.getName() +
+      ", tentando novamente em " +
       WAIT_TIME_TO_TRY_RECONNECTION + " segundos..."
     );
 

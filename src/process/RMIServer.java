@@ -32,7 +32,7 @@ public class RMIServer<T extends Remote> implements Runnable {
       Registry registry = LocateRegistry.getRegistry(port);
       registry.bind(name, skeleton);
   
-      ConsolePrinter.println("Servidor " + name + " iniciado!");
+      ConsolePrinter.println("\nServidor " + name + " iniciado!\n");
     } catch (Exception exception) {
       ConsolePrinter.printlnError("Falha ao iniciar o servidor!");
     }
