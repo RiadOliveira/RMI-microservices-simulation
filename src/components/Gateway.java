@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 
 import dtos.DTO;
-import dtos.auth.AuthData;
+import dtos.auth.AuthDTO;
 import dtos.auth.AuthenticatedDTO;
 import dtos.auth.LoginData;
 import dtos.generic.ExceptionDTO;
@@ -15,6 +15,7 @@ import interfaces.IGateway;
 import interfaces.IStoreService;
 import process.RMIClient;
 import process.ServerData;
+import utils.ConsolePrinter;
 import utils.GatewayHandlersGenerator;
 import utils.ObjectConverter;
 import utils.OperationClassifier;
@@ -58,22 +59,50 @@ public class Gateway implements IGateway {
       needsToGenerateHandlers = false;
     }
 
+    ConsolePrinter.println("\nDTO recebido pelo cliente:");
+    dto.print();
+    ConsolePrinter.println("\nDTO redirecionado para microsserviço:");
+
     try {
-      DTO parsedDTO = parseDTOBeforeHandling(operation, dto);
-      return operationHandlers.get(operation).accept(parsedDTO);
+      return handleDTOTransmission(operation, dto);
     } catch (Exception exception) {
-      if(exception instanceof NullPointerException) {
-        needsToGenerateHandlers = true;
-      }
-      return new ExceptionDTO(
-        exception instanceof AppException ?
-        exception.getMessage() :
-        "Falha na conexão com o microsserviço!"
-      );
+      return handleTransmissionException(exception);
     }
   }
 
-  private DTO parseDTOBeforeHandling(
+  private DTO handleDTOTransmission(
+    RemoteOperation operation, DTO dto
+  ) throws Exception {
+    DTO parsedDTO = parseDTOForOperationHandler(operation, dto);
+    parsedDTO.print();
+
+    ConsolePrinter.println("\nDTO retornado para cliente:");
+    DTO receivedDTO = operationHandlers.get(
+      operation
+    ).accept(parsedDTO);
+    receivedDTO.print();
+
+    return receivedDTO;
+  }
+
+  private DTO handleTransmissionException(
+    Exception exception
+  ) {
+    if(exception instanceof NullPointerException) {
+      needsToGenerateHandlers = true;
+    }
+
+    ExceptionDTO exceptionDTO = new ExceptionDTO(
+      exception instanceof AppException ?
+      exception.getMessage() :
+      "Falha na conexão com o microsserviço!"
+    );
+    exceptionDTO.print();
+
+    return exceptionDTO;
+  }
+
+  private DTO parseDTOForOperationHandler(
     RemoteOperation operation, DTO dto
   ) throws AppException {
     if(OperationClassifier.isForStoreService(operation)) {
@@ -95,7 +124,7 @@ public class Gateway implements IGateway {
       throw new AppException("Instância de operação inválida!");
     }
 
-    AuthData authData = authenticatedDTO.getAuthData();
+    AuthDTO authData = authenticatedDTO.getAuthData();
     boolean validToken = TokenProcessor.isValid(
       authData.getToken(), SECRET_KEY, authData.getUserId()
     );

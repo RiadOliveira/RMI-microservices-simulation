@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import dtos.DTO;
-import dtos.auth.AuthData;
+import dtos.auth.AuthDTO;
 import dtos.auth.LoginData;
 import dtos.generic.ExceptionDTO;
 import dtos.generic.MessageDTO;
@@ -22,15 +22,11 @@ public class AccountService implements IAccountService {
   @Override
   public DTO createAccount(DTO user) throws RemoteException {
     User parsedDTO = ObjectConverter.convert(user);
-    if(parsedDTO == null) {
-      return new ExceptionDTO("Instância de DTO inválida!");
-    }
+    if(parsedDTO == null) return new ExceptionDTO("Instância de DTO inválida!");
 
     boolean existsByEmail = findByEmail(parsedDTO.getEmail()) != null;
     if(existsByEmail) {
-      return new ExceptionDTO(
-        "Um usuário com esse e-mail já existe!"
-      );
+      return new ExceptionDTO("Um usuário com esse e-mail já existe!");
     }
 
     parsedDTO.setPassword(
@@ -43,15 +39,11 @@ public class AccountService implements IAccountService {
   @Override
   public DTO authenticate(DTO authData) throws RemoteException {
     LoginData parsedDTO = ObjectConverter.convert(authData);
-    if(parsedDTO == null) {
-      return new ExceptionDTO("Instância de DTO inválida!");
-    }
+    if(parsedDTO == null) return new ExceptionDTO("Instância de DTO inválida!");
 
     User findedUser = findByEmail(parsedDTO.getEmail());
     if(findedUser == null) {
-      return new ExceptionDTO(
-        "Usuário requisitado não existe!"
-      );
+      return new ExceptionDTO("Usuário requisitado não existe!");
     }
 
     boolean validPassword = Hasher.compare(
@@ -66,7 +58,7 @@ public class AccountService implements IAccountService {
       parsedDTO.getSecretKey(), userId
     );
 
-    return new AuthData(
+    return new AuthDTO(
       userId, findedUser.getType(), token 
     );
   }

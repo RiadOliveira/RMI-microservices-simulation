@@ -6,12 +6,12 @@ import dtos.DTO;
 import enums.UserType;
 import utils.ConsolePrinter;
 
-public class AuthData extends DTO {
+public class AuthDTO extends DTO {
   private final UUID userId;
   private final UserType userType;
   private final String token;
 
-  public AuthData(
+  public AuthDTO(
     UUID userId, UserType userType, String token
   ) {
     this.userId = userId;

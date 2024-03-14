@@ -4,10 +4,10 @@ import dtos.DTO;
 import utils.ConsolePrinter;
 
 public class AuthenticatedDTO extends DTO {
-  private final AuthData authData;
+  private final AuthDTO authData;
   private final DTO dto;
   
-  public AuthenticatedDTO(AuthData authData, DTO dto) {
+  public AuthenticatedDTO(AuthDTO authData, DTO dto) {
     this.authData = authData;
     this.dto = dto;
   }
@@ -19,7 +19,7 @@ public class AuthenticatedDTO extends DTO {
     dto.print();
   }
 
-  public AuthData getAuthData() {
+  public AuthDTO getAuthData() {
     return authData;
   }
 

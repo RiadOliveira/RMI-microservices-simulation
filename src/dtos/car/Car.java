@@ -5,31 +5,53 @@ import java.util.UUID;
 import dtos.DTO;
 import enums.CarCategory;
 import utils.ConsolePrinter;
+import utils.NumberStringGenerator;
 import utils.ValueFormatter;
 
 public abstract class Car extends DTO {
-  private UUID id;
+  private final UUID id;
+  private final String renavan;
+  private final CarCategory category;
+
   private String name;
-  private String renavan;
   private short manufacturingYear;
-  
   private double price;
   private long availableQuantity;
 
-  private final CarCategory category;
-
   public Car(
-    String name, String renavan, CarCategory category,
+    String name, CarCategory category,
     short manufacturingYear, double price,
     long availableQuantity
   ) {
     this.id = UUID.randomUUID();
     this.name = name;
-    this.renavan = renavan;
+    this.renavan = NumberStringGenerator.generate(11);
     this.category = category;
     this.manufacturingYear = manufacturingYear;
     this.price = price;
     this.availableQuantity = availableQuantity;
+  }
+
+  public static Car FromNameAndCategory(
+    String name, CarCategory category
+  ) {
+    int nameHash = Math.abs(name.hashCode());
+
+    short manufacturingYear = (short) (2000 + (nameHash % 24));
+    double price = 20000 + (nameHash % 80000);
+    long availableQuantity = (nameHash % 10);
+
+    switch(category) {
+      case ECONOMIC: return new EconomicCar(
+        name, manufacturingYear, price, availableQuantity
+      );
+      case EXECUTIVE: return new ExecutiveCar(
+        name, manufacturingYear, price, availableQuantity
+      );
+      default: return new IntermediaryCar(
+        name, manufacturingYear, price, availableQuantity
+      );
+    }
   }
 
   @Override
@@ -60,24 +82,20 @@ public abstract class Car extends DTO {
     return id;
   }
 
+  public String getRenavan() {
+    return renavan;
+  }
+
+  public CarCategory getCategory() {
+    return category;
+  }
+
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getRenavan() {
-    return renavan;
-  }
-
-  public void setRenavan(String renavan) {
-    this.renavan = renavan;
-  }
-
-  public CarCategory getCategory() {
-    return category;
   }
 
   public short getManufacturingYear() {

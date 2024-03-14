@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import dtos.DTO;
-import dtos.auth.AuthData;
+import dtos.auth.AuthDTO;
 import dtos.auth.AuthenticatedDTO;
 import dtos.auth.LoginData;
 import dtos.user.Customer;
@@ -19,7 +19,7 @@ import utils.OperationClassifier;
 
 public class AppClient extends AppClientOperationHandler {
   private static final Scanner scanner = new Scanner(System.in);
-  private AuthData userAuthData;
+  private AuthDTO userAuthData;
 
   public void execute(IGateway gatewayServer) {
     boolean choseExitOption = false;
@@ -93,17 +93,17 @@ public class AppClient extends AppClientOperationHandler {
       dtoToSend = new AuthenticatedDTO(userAuthData, dtoToSend);
     }
 
-    ConsolePrinter.println("Dados enviados:");
+    ConsolePrinter.println("DTO enviado:");
     dtoToSend.print();
 
     DTO receivedDTO = gatewayServer.handleRedirect(
       selectedOperation, dtoToSend
     );
-    ConsolePrinter.println("\nDados recebidos:");
+    ConsolePrinter.println("\nDTO recebido:");
     receivedDTO.print();
 
-    if(receivedDTO instanceof AuthData) {
-      userAuthData = (AuthData) receivedDTO;
+    if(receivedDTO instanceof AuthDTO) {
+      userAuthData = (AuthDTO) receivedDTO;
     }
     ConsolePrinter.displayAndWaitForEnterPressing(scanner);
     return false;

@@ -5,12 +5,11 @@ import utils.ConsolePrinter;
 
 public class EconomicCar extends Car {
   public EconomicCar(
-    String name, String renavan,
-    short manufacturingYear, double price,
-    long availableQuantity
+    String name, short manufacturingYear,
+    double price, long availableQuantity
   ) {
     super(
-      name, renavan, CarCategory.ECONOMIC,
+      name, CarCategory.ECONOMIC,
       manufacturingYear, price, availableQuantity
     );
   }

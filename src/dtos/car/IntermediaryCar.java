@@ -5,12 +5,11 @@ import utils.ConsolePrinter;
 
 public class IntermediaryCar extends Car {
   public IntermediaryCar(
-    String name, String renavan,
-    short manufacturingYear, double price,
-    long availableQuantity
+    String name, short manufacturingYear,
+    double price, long availableQuantity
   ) {
     super(
-      name, renavan, CarCategory.INTERMEDIARY,
+      name, CarCategory.INTERMEDIARY,
       manufacturingYear, price, availableQuantity
     );
   }
