@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 
 import dtos.DTO;
-import enums.AppOperation;
+import enums.RemoteOperation;
 import interfaces.IAccountService;
 import interfaces.IStoreService;
 
@@ -14,52 +14,61 @@ public class GatewayHandlersGenerator {
     DTO accept(DTO dto) throws RemoteException;
   }
 
-  public static HashMap<AppOperation, ThrowingConsumer> generate(
+  public static HashMap<RemoteOperation, ThrowingConsumer> generate(
     IAccountService accountService, IStoreService storeService
   ) {
-    HashMap<AppOperation, ThrowingConsumer> operationHandlers = 
+    HashMap<RemoteOperation, ThrowingConsumer> operationHandlers = 
       new HashMap<>();
 
-    operationHandlers.put(
-      AppOperation.CREATE_ACCOUNT,
-      accountService::createAccount
-    );
-    operationHandlers.put(
-      AppOperation.AUTHENTICATE,
-      accountService::authenticate
-    );
-    operationHandlers.put(
-      AppOperation.CREATE_CAR,
-      null//storeService::createCar
-    );
-    operationHandlers.put(
-      AppOperation.UPDATE_CAR,
-      null//storeService::updateCar
-    );
-    operationHandlers.put(
-      AppOperation.PATCH_CAR_QUANTITY,
-      null//storeService::patchCarQuantity
-    );
-    operationHandlers.put(
-      AppOperation.DELETE_CAR,
-      null//storeService::deleteCar
-    );
-    operationHandlers.put(
-      AppOperation.LIST_ALL_CARS,
-      null//storeService::listAllCars
-    );
-    operationHandlers.put(
-      AppOperation.FIND_CAR,
-      null//storeService::findCar
-    );
-    operationHandlers.put(
-      AppOperation.GET_QUANTITY_OF_CARS_STORED,
-      null//storeService::getQuantityOfCarsStored
-    );
-    operationHandlers.put(
-      AppOperation.BUY_CAR,
-      null//storeService::buyCar
-    );
+    if(accountService != null) {
+      operationHandlers.put(
+        RemoteOperation.CREATE_ACCOUNT,
+        accountService::createAccount
+      );
+      operationHandlers.put(
+        RemoteOperation.AUTHENTICATE,
+        accountService::authenticate
+      );
+    }
+
+    if(storeService != null) {
+      operationHandlers.put(
+        RemoteOperation.CREATE_CAR,
+        storeService::createCar
+      );
+      operationHandlers.put(
+        RemoteOperation.UPDATE_CAR,
+        storeService::updateCar
+      );
+      operationHandlers.put(
+        RemoteOperation.PATCH_CAR_QUANTITY,
+        storeService::patchCarQuantity
+      );
+      operationHandlers.put(
+        RemoteOperation.DELETE_CAR,
+        storeService::deleteCar
+      );
+      operationHandlers.put(
+        RemoteOperation.LIST_ALL_CARS,
+        storeService::listAllCars
+      );
+      operationHandlers.put(
+        RemoteOperation.LIST_ALL_CARS_BY_CATEGORY,
+        storeService::listAllCarsByCategory
+      );
+      operationHandlers.put(
+        RemoteOperation.SEARCH_CAR,
+        storeService::searchCar
+      );
+      operationHandlers.put(
+        RemoteOperation.GET_QUANTITY_OF_CARS_STORED,
+        storeService::getQuantityOfCarsStored
+      );
+      operationHandlers.put(
+        RemoteOperation.BUY_CAR,
+        storeService::buyCar
+      );
+    }
 
     return operationHandlers;
   }

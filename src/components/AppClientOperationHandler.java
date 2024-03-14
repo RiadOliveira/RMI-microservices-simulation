@@ -3,7 +3,7 @@ package components;
 import java.util.HashMap;
 
 import dtos.DTO;
-import enums.AppOperation;
+import enums.RemoteOperation;
 
 public abstract class AppClientOperationHandler {
   @FunctionalInterface
@@ -12,43 +12,46 @@ public abstract class AppClientOperationHandler {
   }
 
   protected final HashMap<
-    AppOperation, ThrowingSupplier
+    RemoteOperation, ThrowingSupplier
   > authenticatedHandlers = new HashMap<>();
   protected final HashMap<
-    AppOperation, ThrowingSupplier
+    RemoteOperation, ThrowingSupplier
   > unauthenticatedHandlers = new HashMap<>();
 
   public AppClientOperationHandler() {
     unauthenticatedHandlers.put(
-      AppOperation.CREATE_ACCOUNT, this::handleCreateAccount
+      RemoteOperation.CREATE_ACCOUNT, this::handleCreateAccount
     );
     unauthenticatedHandlers.put(
-      AppOperation.AUTHENTICATE, this::handleAuthenticate
+      RemoteOperation.AUTHENTICATE, this::handleAuthenticate
     );
 
     authenticatedHandlers.put(
-      AppOperation.CREATE_CAR, this::handleCreateCar
+      RemoteOperation.CREATE_CAR, this::handleCreateCar
     );
     authenticatedHandlers.put(
-      AppOperation.UPDATE_CAR, this::handleUpdateCar
+      RemoteOperation.UPDATE_CAR, this::handleUpdateCar
     );
     authenticatedHandlers.put(
-      AppOperation.PATCH_CAR_QUANTITY, this::handlePatchCarQuantity
+      RemoteOperation.PATCH_CAR_QUANTITY, this::handlePatchCarQuantity
     );
     authenticatedHandlers.put(
-      AppOperation.DELETE_CAR, this::handleDeleteCar
+      RemoteOperation.DELETE_CAR, this::handleDeleteCar
     );
     authenticatedHandlers.put(
-      AppOperation.LIST_ALL_CARS, this::handleListAllCars
+      RemoteOperation.LIST_ALL_CARS, this::handleListAllCars
     );
     authenticatedHandlers.put(
-      AppOperation.FIND_CAR, this::handleFindCar
+      RemoteOperation.LIST_ALL_CARS_BY_CATEGORY, this::handleListAllCarsByCategory
     );
     authenticatedHandlers.put(
-      AppOperation.GET_QUANTITY_OF_CARS_STORED, this::handleGetQuantityOfCarsStored
+      RemoteOperation.SEARCH_CAR, this::handlesearchCar
     );
     authenticatedHandlers.put(
-      AppOperation.BUY_CAR, this::handleBuyCar
+      RemoteOperation.GET_QUANTITY_OF_CARS_STORED, this::handleGetQuantityOfCarsStored
+    );
+    authenticatedHandlers.put(
+      RemoteOperation.BUY_CAR, this::handleBuyCar
     );
   }
 
@@ -59,7 +62,8 @@ public abstract class AppClientOperationHandler {
   protected abstract DTO handlePatchCarQuantity() throws Exception;
   protected abstract DTO handleDeleteCar() throws Exception;
   protected abstract DTO handleListAllCars() throws Exception;
-  protected abstract DTO handleFindCar() throws Exception;
+  protected abstract DTO handleListAllCarsByCategory() throws Exception;
+  protected abstract DTO handlesearchCar() throws Exception;
   protected abstract DTO handleGetQuantityOfCarsStored() throws Exception;
   protected abstract DTO handleBuyCar() throws Exception;
 }

@@ -4,10 +4,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import dtos.DTO;
-import enums.AppOperation;
+import enums.RemoteOperation;
 
 public interface IGateway extends Remote {
   public DTO handleRedirect(
-    AppOperation operation, DTO dto
+    RemoteOperation operation, DTO dto
   ) throws RemoteException;
 }

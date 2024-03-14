@@ -10,7 +10,14 @@ public class ConsolePrinter {
     "  1. Criar conta\n" + "  2. Autenticar-se\n" +
     "  3. Limpar console\n" + "  4. Sair\n";
   public static final String AUTHENTICATED_CLIENT_PANEL = 
-    "Escolha um dos comandos abaixo:\n";
+    "Escolha um dos comandos abaixo:\n" +
+    "  1. Criar carro\n" + "  2. Atualizar carro\n" +
+    "  3. Atualizar quantidade de um carro\n" +
+    "  4. Excluir carro\n" + "  5. Listar todos os carros\n" +
+    "  6. Listar todos os carros por categoria\n" +
+    "  7. Pesquisar carro\n" + "  8. Obter quantidade de carros armazenados\n" +
+    "  9. Comprar carro\n" + "  10. Deslogar\n" +
+    "  11. Limpar console\n" + "  12. Sair\n";
   
   private static final String CLEAR_CONSOLE = "\033[H\033[2J";
   private static final String MOVE_TO_PREVIOUS_LINE = "\033[1A";

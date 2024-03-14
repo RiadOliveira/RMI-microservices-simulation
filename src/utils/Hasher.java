@@ -3,7 +3,7 @@ package utils;
 import java.security.MessageDigest;
 import java.util.Base64;
 
-public class PasswordHasher {
+public class Hasher {
   private static final String SHA3_INSTANCE_NAME = "SHA3-256";
   private static MessageDigest messageDigest;
 
@@ -17,16 +17,16 @@ public class PasswordHasher {
     }
   }
 
-  public static String hashAndEncode(String password) {
-    byte[] hashedBytes = messageDigest.digest(password.getBytes());
+  public static String hashAndEncode(String content) {
+    byte[] hashedBytes = messageDigest.digest(content.getBytes());
     return Base64.getEncoder().encodeToString(
       hashedBytes
     );
   }
 
-  public static boolean passwordsAreEqual(
-    String hashedFirstPassword, String secondPassword
+  public static boolean compare(
+    String hashedContent, String content
   ) {
-    return hashedFirstPassword.equals(hashAndEncode(secondPassword));
+    return hashedContent.equals(hashAndEncode(content));
   }
 }

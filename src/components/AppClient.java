@@ -5,18 +5,21 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import dtos.DTO;
-import dtos.user.AuthData;
+import dtos.auth.AuthData;
+import dtos.auth.AuthenticatedDTO;
+import dtos.auth.LoginData;
 import dtos.user.Customer;
 import dtos.user.Employee;
-import dtos.user.User;
-import enums.AppOperation;
+import enums.LocalOperation;
+import enums.RemoteOperation;
 import error.AppException;
 import interfaces.IGateway;
 import utils.ConsolePrinter;
+import utils.OperationClassifier;
 
 public class AppClient extends AppClientOperationHandler {
   private static final Scanner scanner = new Scanner(System.in);
-  private User loggedUser;
+  private AuthData userAuthData;
 
   public void execute(IGateway gatewayServer) {
     boolean choseExitOption = false;
@@ -26,13 +29,6 @@ public class AppClient extends AppClientOperationHandler {
           gatewayServer
         );
       } catch (Exception exception) {
-        if(exception instanceof RemoteException) {
-          ConsolePrinter.printlnError(
-            "Conexão com o servidor perdida, finalizando cliente..."
-          );
-          return;
-        }
-
         handleExecutionException(exception);
       }
     }
@@ -41,17 +37,18 @@ public class AppClient extends AppClientOperationHandler {
   private boolean processUserChoiceCheckingExit(
     IGateway gatewayServer
   ) throws Exception {
-    boolean authenticated = loggedUser != null;
+    boolean authenticated = userAuthData != null;
     ConsolePrinter.printClientOperationPanel(authenticated);
 
     int operationOption = Integer.parseInt(scanner.nextLine()) - 1;
-    HashMap<AppOperation, ThrowingSupplier> selectedHandlers =
+    HashMap<RemoteOperation, ThrowingSupplier> selectedHandlers =
       authenticated ? authenticatedHandlers : unauthenticatedHandlers;
     int handlersSize = selectedHandlers.size();
 
     boolean operationWithoutTransmission = operationOption >= handlersSize;
     if(operationWithoutTransmission) {
-      return handleLocalOperation(operationOption - handlersSize);
+      int localOperationOption = operationOption - handlersSize;
+      return handleLocalOperation(authenticated, localOperationOption);
     }
 
     return handleRemoteOperation(
@@ -59,23 +56,43 @@ public class AppClient extends AppClientOperationHandler {
     );
   }
 
-  private boolean handleLocalOperation(int localOperationOption) {
-    boolean exitOption = localOperationOption == 1;
-    if(!exitOption) ConsolePrinter.clearConsole();
+  private boolean handleLocalOperation(
+    boolean authenticated, int localOperationOption
+  ) throws AppException {
+    int parsedOption = localOperationOption + (!authenticated ? 1 : 0);
+    if(localOperationOption < 0 || parsedOption > 2) {
+      throw new AppException("Operação escolhida inválida!");
+    }
 
-    return exitOption;
+    LocalOperation operation = LocalOperation.values()[parsedOption];
+    switch(operation) {
+      case LOGOUT: {
+        userAuthData = null;
+        ConsolePrinter.println("");
+        return false;
+      }
+      case CLEAR_CONSOLE: {
+        ConsolePrinter.clearConsole();
+        return false;
+      }
+      default: return true;
+    }
   }
 
   private boolean handleRemoteOperation(
     IGateway gatewayServer, int operationOption,
-    HashMap<AppOperation, ThrowingSupplier> selectedHandlers
+    HashMap<RemoteOperation, ThrowingSupplier> selectedHandlers
   ) throws Exception {
-    AppOperation selectedOperation = AppOperation.values()[
+    RemoteOperation selectedOperation = RemoteOperation.values()[
       operationOption
     ];
     ThrowingSupplier operationHandler = selectedHandlers.get(selectedOperation);
 
     DTO dtoToSend = operationHandler.accept();
+    if(OperationClassifier.isForStoreService(selectedOperation)) {
+      dtoToSend = new AuthenticatedDTO(userAuthData, dtoToSend);
+    }
+
     ConsolePrinter.println("Dados enviados:");
     dtoToSend.print();
 
@@ -85,19 +102,28 @@ public class AppClient extends AppClientOperationHandler {
     ConsolePrinter.println("\nDados recebidos:");
     receivedDTO.print();
 
+    if(receivedDTO instanceof AuthData) {
+      userAuthData = (AuthData) receivedDTO;
+    }
     ConsolePrinter.displayAndWaitForEnterPressing(scanner);
     return false;
   }
 
   private void handleExecutionException(Exception exception) {
-    boolean isAppException = exception instanceof AppException;
-
-    if(!isAppException) ConsolePrinter.println("");
-    ConsolePrinter.printlnError(
-      isAppException ? exception.getMessage() : "Comando inserido inválido!"
-    );
+    String errorMessage = getErrorMessage(exception);
+    
     ConsolePrinter.println("");
+    ConsolePrinter.printlnError(errorMessage);
     ConsolePrinter.displayAndWaitForEnterPressing(scanner);
+  }
+
+  private String getErrorMessage(Exception exception) {
+    if(exception instanceof AppException) return exception.getMessage();
+    if(exception instanceof RemoteException) {
+      return "Falha na comunicação com o servidor!";
+    }
+
+    return "Operação escolhida inválida!";
   }
 
   @Override
@@ -124,7 +150,7 @@ public class AppClient extends AppClientOperationHandler {
     String[] inputsReceived = ConsolePrinter.printInputNameAndScan(
       new String[]{"E-mail", "Senha"}, scanner
     );
-    return new AuthData(inputsReceived[0], inputsReceived[1]);
+    return new LoginData(inputsReceived[0], inputsReceived[1]);
   }
 
   @Override
@@ -153,7 +179,12 @@ public class AppClient extends AppClientOperationHandler {
   }
 
   @Override
-  protected DTO handleFindCar() throws Exception {
+  protected DTO handleListAllCarsByCategory() throws Exception {
+    return null;
+  }
+
+  @Override
+  protected DTO handlesearchCar() throws Exception {
     return null;
   }
 

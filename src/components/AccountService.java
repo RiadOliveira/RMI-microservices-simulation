@@ -3,15 +3,18 @@ package components;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import dtos.DTO;
+import dtos.auth.AuthData;
+import dtos.auth.LoginData;
 import dtos.generic.ExceptionDTO;
 import dtos.generic.MessageDTO;
-import dtos.user.AuthData;
 import dtos.user.User;
 import interfaces.IAccountService;
 import utils.ObjectConverter;
-import utils.PasswordHasher;
+import utils.TokenProcessor;
+import utils.Hasher;
 
 public class AccountService implements IAccountService {
   private final List<User> accountsDatabase = new ArrayList<>();
@@ -31,7 +34,7 @@ public class AccountService implements IAccountService {
     }
 
     parsedDTO.setPassword(
-      PasswordHasher.hashAndEncode(parsedDTO.getPassword())
+      Hasher.hashAndEncode(parsedDTO.getPassword())
     );
     accountsDatabase.add(parsedDTO);
     return new MessageDTO("Conta criada com sucesso!");
@@ -39,7 +42,7 @@ public class AccountService implements IAccountService {
 
   @Override
   public DTO authenticate(DTO authData) throws RemoteException {
-    AuthData parsedDTO = ObjectConverter.convert(authData);
+    LoginData parsedDTO = ObjectConverter.convert(authData);
     if(parsedDTO == null) {
       return new ExceptionDTO("Instância de DTO inválida!");
     }
@@ -51,14 +54,21 @@ public class AccountService implements IAccountService {
       );
     }
 
-    boolean validPassword = PasswordHasher.passwordsAreEqual(
+    boolean validPassword = Hasher.compare(
       findedUser.getPassword(), parsedDTO.getPassword()
     );
     if(!validPassword) {
       return new ExceptionDTO("Email ou senha inválido(s)!");
     }
 
-    return findedUser;
+    UUID userId = findedUser.getId();
+    String token = TokenProcessor.generate(
+      parsedDTO.getSecretKey(), userId
+    );
+
+    return new AuthData(
+      userId, findedUser.getType(), token 
+    );
   }
 
   private User findByEmail(String email) {

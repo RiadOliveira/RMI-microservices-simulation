@@ -1,11 +1,14 @@
 package dtos.car;
 
+import java.util.UUID;
+
 import dtos.DTO;
 import enums.CarCategory;
 import utils.ConsolePrinter;
 import utils.ValueFormatter;
 
 public abstract class Car extends DTO {
+  private UUID id;
   private String name;
   private String renavan;
   private short manufacturingYear;
@@ -20,6 +23,7 @@ public abstract class Car extends DTO {
     short manufacturingYear, double price,
     long availableQuantity
   ) {
+    this.id = UUID.randomUUID();
     this.name = name;
     this.renavan = renavan;
     this.category = category;
@@ -50,6 +54,10 @@ public abstract class Car extends DTO {
       spaces + "Quantidade disponível: " + 
       availableQuantity
     );
+  }
+
+  public UUID getId() {
+    return id;
   }
 
   public String getName() {
