@@ -2,6 +2,8 @@ package components;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +23,8 @@ import interfaces.IStoreService;
 import utils.ObjectConverter;
 
 public class StoreService implements IStoreService {
-  List<Car> databaseCars = getInitialDatabaseCars();
+  private final Comparator<Car> carNameComparator = Comparator.comparing(Car::getName);
+  private final List<Car> databaseCars = getInitialDatabaseCars();
 
   @Override
   public DTO createCar(DTO car) throws RemoteException {
@@ -35,6 +38,8 @@ public class StoreService implements IStoreService {
     }
 
     databaseCars.add(parsedDTO);
+    sortCarsByName(databaseCars);
+
     return new MessageDTO("Carro adicionado com sucesso!");
   }
 
@@ -51,6 +56,7 @@ public class StoreService implements IStoreService {
     findedCar.setName(parsedDTO.getName());
     findedCar.setManufacturingYear(parsedDTO.getManufacturingYear());
     findedCar.setPrice(parsedDTO.getPrice());
+    sortCarsByName(databaseCars);
 
     return new MessageDTO("Carro atualizado com sucesso!");
   }
@@ -73,7 +79,7 @@ public class StoreService implements IStoreService {
       );
     }
 
-    findedCar.setAvailableQuantity(updatedQuantity);
+    handleCarQuantityUpdate(findedCar, updatedQuantity);
     return new MessageDTO(
       "Quantidade do carro atualizada para " +
       updatedQuantity + "!"
@@ -145,15 +151,15 @@ public class StoreService implements IStoreService {
     if(findedCar == null) {
       return new ExceptionDTO("Carro informado não encontrado!");
     }
-    if(findedCar.getAvailableQuantity() == 0) {
+
+    long carQuantity = findedCar.getAvailableQuantity();
+    if(carQuantity == 0) {
       return new ExceptionDTO(
         "O carro informado não está disponível no estoque!"
       );
     }
 
-    findedCar.setAvailableQuantity(
-      findedCar.getAvailableQuantity() - 1
-    );
+    handleCarQuantityUpdate(findedCar, carQuantity - 1);
     return new MessageDTO("Carro comprado com sucesso!");
   }
 
@@ -182,7 +188,12 @@ public class StoreService implements IStoreService {
       }
     }
     
+    sortCarsByName(initialDatabaseCars);
     return initialDatabaseCars;
+  }
+
+  private void sortCarsByName(List<Car> cars) {
+    Collections.sort(cars, carNameComparator);
   }
 
   private Car findBySearchDTO(SearchCarDTO searchDTO) {
@@ -200,5 +211,14 @@ public class StoreService implements IStoreService {
     }
 
     return null;
+  }
+
+  private void handleCarQuantityUpdate(
+    Car car, long updatedQuantity
+  ) {
+    boolean needsToBeDeleted = updatedQuantity <= 0;
+    
+    if(needsToBeDeleted) databaseCars.remove(car);
+    else car.setAvailableQuantity(updatedQuantity);
   }
 }

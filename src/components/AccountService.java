@@ -10,6 +10,8 @@ import dtos.auth.AuthDTO;
 import dtos.auth.LoginData;
 import dtos.generic.ExceptionDTO;
 import dtos.generic.MessageDTO;
+import dtos.user.Customer;
+import dtos.user.Employee;
 import dtos.user.User;
 import interfaces.IAccountService;
 import utils.ObjectConverter;
@@ -17,7 +19,7 @@ import utils.TokenProcessor;
 import utils.Hasher;
 
 public class AccountService implements IAccountService {
-  private final List<User> accountsDatabase = new ArrayList<>();
+  private final List<User> databaseAccounts = getInitialDatabaseAccounts();
 
   @Override
   public DTO createAccount(DTO user) throws RemoteException {
@@ -32,7 +34,7 @@ public class AccountService implements IAccountService {
     parsedDTO.setPassword(
       Hasher.hashAndEncode(parsedDTO.getPassword())
     );
-    accountsDatabase.add(parsedDTO);
+    databaseAccounts.add(parsedDTO);
     return new MessageDTO("Conta criada com sucesso!");
   }
 
@@ -62,10 +64,29 @@ public class AccountService implements IAccountService {
   }
 
   private User findByEmail(String email) {
-    for(User account : accountsDatabase) {
+    for(User account : databaseAccounts) {
       if(account.getEmail().equals(email)) return account;
     }
 
     return null;
+  }
+
+  private List<User> getInitialDatabaseAccounts() {
+    List<User> initialDatabaseAccounts = new ArrayList<>();
+
+    initialDatabaseAccounts.add(
+      new Customer(
+        "cliente@e.com", "Cliente",
+        Hasher.hashAndEncode("1234")
+      )
+    );
+    initialDatabaseAccounts.add(
+      new Employee(
+        "func@e.com", "Funcionário",
+        Hasher.hashAndEncode("1234")
+      )
+    );
+
+    return initialDatabaseAccounts;
   }
 }

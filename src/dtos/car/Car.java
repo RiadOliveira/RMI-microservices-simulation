@@ -61,7 +61,7 @@ public abstract class Car extends DTO {
     String renavan = NumberStringGenerator.generate(11);
     short manufacturingYear = (short) (2000 + (nameHash % 24));
     double price = 20000 + (nameHash % 80000);
-    long availableQuantity = (nameHash % 10);
+    long availableQuantity = (nameHash % 10) + 1;
 
     switch(category) {
       case ECONOMIC: return new EconomicCar(
