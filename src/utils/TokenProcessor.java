@@ -12,8 +12,6 @@ public class TokenProcessor {
   public static boolean isValid(
     String token, String secretKey, UUID userId
   ) {
-    return Hasher.compare(
-      token, generate(secretKey, userId)
-    );
+    return Hasher.compare(token, secretKey + userId);
   }
 }

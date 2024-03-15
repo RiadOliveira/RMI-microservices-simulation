@@ -58,9 +58,7 @@ public class AccountService implements IAccountService {
       parsedDTO.getSecretKey(), userId
     );
 
-    return new AuthDTO(
-      userId, findedUser.getType(), token 
-    );
+    return new AuthDTO(findedUser, token);
   }
 
   private User findByEmail(String email) {

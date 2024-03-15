@@ -15,7 +15,7 @@ public class AuthenticatedDTO extends DTO {
   @Override
   public void print() {
     authData.print();
-    ConsolePrinter.println("");
+    ConsolePrinter.println("Dados do DTO:");
     dto.print();
   }
 

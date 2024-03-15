@@ -1,21 +1,15 @@
 package dtos.auth;
 
-import java.util.UUID;
-
 import dtos.DTO;
-import enums.UserType;
+import dtos.user.User;
 import utils.ConsolePrinter;
 
 public class AuthDTO extends DTO {
-  private final UUID userId;
-  private final UserType userType;
+  private final User user;
   private final String token;
 
-  public AuthDTO(
-    UUID userId, UserType userType, String token
-  ) {
-    this.userId = userId;
-    this.userType = userType;
+  public AuthDTO(User user, String token) {
+    this.user = user;
     this.token = token;
   }
 
@@ -23,21 +17,12 @@ public class AuthDTO extends DTO {
   public void print() {
     ConsolePrinter.println("Dados da autenticação:");
 
-    String spaces = " ".repeat(2);
-    ConsolePrinter.println(spaces + "Id do usuário: " + userId);
-    ConsolePrinter.println(
-      spaces + "Tipo do usuário: " +
-      (userType.equals(UserType.CUSTOMER) ? "Cliente" : "Funcionário")
-    );
-    ConsolePrinter.println(spaces + "Token: " + token);
+    user.print(2);
+    ConsolePrinter.println("  Token: " + token);
   }
 
-  public UUID getUserId() {
-    return userId;
-  }
-
-  public UserType getUserType() {
-    return userType;
+  public User getUser() {
+    return user;
   }
 
   public String getToken() {

@@ -7,16 +7,17 @@ public class ConsolePrinter {
 
   public static final String UNAUTHENTICATED_CLIENT_PANEL =
     "Escolha um dos comandos abaixo:\n" +
-    "  1. Criar conta\n" + "  2. Autenticar-se\n" +
-    "  3. Limpar console\n" + "  4. Sair\n";
+    " 01. Criar conta\n" + " 02. Autenticar-se\n" +
+    " 03. Limpar console\n" + " 04. Sair\n";
   public static final String AUTHENTICATED_CLIENT_PANEL = 
     "Escolha um dos comandos abaixo:\n" +
-    "  1. Criar carro\n" + "  2. Atualizar carro\n" +
-    "  3. Atualizar quantidade de um carro\n" +
-    "  4. Excluir carro\n" + "  5. Listar todos os carros\n" +
-    "  6. Listar todos os carros por categoria\n" +
-    "  7. Pesquisar carro\n" + "  8. Obter quantidade de carros armazenados\n" +
-    "  9. Comprar carro\n" + "  10. Deslogar\n" +
+    "  01. Criar carro\n" + "  02. Atualizar carro\n" +
+    "  03. Atualizar quantidade de um carro\n" +
+    "  04. Excluir carro\n" + "  05. Listar todos os carros\n" +
+    "  06. Listar todos os carros por categoria\n" +
+    "  07. Pesquisar carro\n" +
+    "  08. Obter quantidade de carros armazenados\n" +
+    "  09. Comprar carro\n" + "  10. Deslogar\n" +
     "  11. Limpar console\n" + "  12. Sair\n";
   
   private static final String CLEAR_CONSOLE = "\033[H\033[2J";
@@ -43,6 +44,7 @@ public class ConsolePrinter {
   public static synchronized void printClientOperationPanel(
     boolean authenticated
   ) {
+    ConsolePrinter.println("");
     ConsolePrinter.println(
       authenticated ? AUTHENTICATED_CLIENT_PANEL :
       UNAUTHENTICATED_CLIENT_PANEL
@@ -66,7 +68,6 @@ public class ConsolePrinter {
       inputsReceived[ind] = scanner.nextLine();
     }
 
-    println("");
     return inputsReceived;
   }
 

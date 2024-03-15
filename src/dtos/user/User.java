@@ -23,6 +23,16 @@ public abstract class User extends DTO {
     this.password = password;
   }
 
+  public static User FromType(
+    UserType type, String email,
+    String name, String password
+  ) {
+    switch(type) {
+      case CUSTOMER: return new Customer(email, name, password);
+      default: return new Employee(email, name, password);
+    }
+  }
+
   @Override
   public void print() {
     print(0);

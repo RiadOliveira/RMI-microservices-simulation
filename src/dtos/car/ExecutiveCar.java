@@ -5,11 +5,11 @@ import utils.ConsolePrinter;
 
 public class ExecutiveCar extends Car {
   public ExecutiveCar(
-    String name, short manufacturingYear,
+    String name, String renavan, short manufacturingYear,
     double price, long availableQuantity
   ) {
     super(
-      name, CarCategory.EXECUTIVE,
+      name, renavan, CarCategory.EXECUTIVE,
       manufacturingYear, price, availableQuantity
     );
   }

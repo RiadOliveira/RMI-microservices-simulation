@@ -8,10 +8,18 @@ import dtos.DTO;
 import dtos.auth.AuthDTO;
 import dtos.auth.AuthenticatedDTO;
 import dtos.auth.LoginData;
-import dtos.user.Customer;
-import dtos.user.Employee;
+import dtos.car.Car;
+import dtos.car.operation.CarCategoryDTO;
+import dtos.car.operation.SearchCarDTO;
+import dtos.car.operation.UpdateCarDTO;
+import dtos.car.operation.UpdateCarQuantityDTO;
+import dtos.generic.NullDTO;
+import dtos.user.User;
+import enums.CarCategory;
 import enums.LocalOperation;
 import enums.RemoteOperation;
+import enums.SearchCarKeywordType;
+import enums.UserType;
 import error.AppException;
 import interfaces.IGateway;
 import utils.ConsolePrinter;
@@ -51,8 +59,11 @@ public class AppClient extends AppClientOperationHandler {
       return handleLocalOperation(authenticated, localOperationOption);
     }
 
+    RemoteOperation selectedOperation = RemoteOperation.values()[
+      operationOption + (authenticated ? unauthenticatedHandlers.size() : 0)
+    ];
     return handleRemoteOperation(
-      gatewayServer, operationOption, selectedHandlers
+      gatewayServer, selectedOperation, selectedHandlers
     );
   }
 
@@ -80,12 +91,9 @@ public class AppClient extends AppClientOperationHandler {
   }
 
   private boolean handleRemoteOperation(
-    IGateway gatewayServer, int operationOption,
+    IGateway gatewayServer, RemoteOperation selectedOperation,
     HashMap<RemoteOperation, ThrowingSupplier> selectedHandlers
   ) throws Exception {
-    RemoteOperation selectedOperation = RemoteOperation.values()[
-      operationOption
-    ];
     ThrowingSupplier operationHandler = selectedHandlers.get(selectedOperation);
 
     DTO dtoToSend = operationHandler.accept();
@@ -93,7 +101,7 @@ public class AppClient extends AppClientOperationHandler {
       dtoToSend = new AuthenticatedDTO(userAuthData, dtoToSend);
     }
 
-    ConsolePrinter.println("DTO enviado:");
+    ConsolePrinter.println("\nDTO enviado:");
     dtoToSend.print();
 
     DTO receivedDTO = gatewayServer.handleRedirect(
@@ -135,14 +143,14 @@ public class AppClient extends AppClientOperationHandler {
       }, scanner
     );
 
-    boolean isEmployee = inputsReceived[0].equals("1");
+    UserType userType = UserType.values()[
+      Integer.valueOf(inputsReceived[0])
+    ];
     String email = inputsReceived[1];
     String name = inputsReceived[2];
     String password = inputsReceived[3];
 
-    return isEmployee ?
-      new Employee(email, name, password) :
-      new Customer(email, name, password);
+    return User.FromType(userType, email, name, password);
   }
 
   @Override
@@ -155,46 +163,116 @@ public class AppClient extends AppClientOperationHandler {
 
   @Override
   protected DTO handleCreateCar() throws Exception {
-    return null;
+    String[] inputsReceived = ConsolePrinter.printInputNameAndScan(
+      new String[]{
+        "Nome", "Renavan",
+        "Categoria (0 - Econ. | 1 - Exec. | 2 - Inter.)",
+        "Ano de fabricação", "Preço", "Quantidade inicial"
+      }, scanner
+    );
+
+    CarCategory category = CarCategory.values()[
+      Integer.valueOf(inputsReceived[2])
+    ];
+    short manufacturingYear = Short.valueOf(inputsReceived[3]);
+    double price = Double.valueOf(inputsReceived[4]);
+    long availableQuantity = Long.valueOf(inputsReceived[5]);
+
+    return Car.FromCategory(
+      inputsReceived[0], inputsReceived[1], category,
+      manufacturingYear, price, availableQuantity
+    );
   }
 
   @Override
   protected DTO handleUpdateCar() throws Exception {
-    return null;
+    String[] inputsReceived = ConsolePrinter.printInputNameAndScan(
+      new String[]{
+        "Pesquisar por (0 - Nome | 1 - Renavan)",
+        "Termo de pesquisa", "Nome atualizado",
+        "Ano de fabricação atualizado", "Preço atualizado"
+      }, scanner
+    );
+
+    SearchCarKeywordType searchKeywordType = SearchCarKeywordType.
+      values()[Integer.valueOf(inputsReceived[0])];
+    short updatedManufacturingYear = Short.valueOf(inputsReceived[3]);
+    double updatedPrice = Double.valueOf(inputsReceived[4]);
+    
+    return new UpdateCarDTO(
+      searchKeywordType, inputsReceived[1], inputsReceived[2],
+      updatedManufacturingYear, updatedPrice
+    );
   }
 
   @Override
   protected DTO handlePatchCarQuantity() throws Exception {
-    return null;
+    String[] inputsReceived = ConsolePrinter.printInputNameAndScan(
+      new String[]{
+        "Pesquisar por (0 - Nome | 1 - Renavan)",
+        "Termo de pesquisa", "Valor de atualização"
+      }, scanner
+    );
+
+    SearchCarKeywordType searchKeywordType = SearchCarKeywordType.
+      values()[Integer.valueOf(inputsReceived[0])];
+    int updateValue = Integer.valueOf(inputsReceived[2]);
+
+    return new UpdateCarQuantityDTO(
+      searchKeywordType, inputsReceived[1], updateValue
+    );
   }
 
   @Override
   protected DTO handleDeleteCar() throws Exception {
-    return null;
+    return readSearchCarDTOFromScanner();
   }
 
   @Override
   protected DTO handleListAllCars() throws Exception {
-    return null;
+    return new NullDTO();
   }
 
   @Override
   protected DTO handleListAllCarsByCategory() throws Exception {
-    return null;
+    String[] inputsReceived = ConsolePrinter.printInputNameAndScan(
+      new String[]{
+        "Categoria (0 - Econ. | 1 - Exec. | 2 - Inter.)"
+      }, scanner
+    );
+
+    CarCategory category = CarCategory.values()[
+      Integer.valueOf(inputsReceived[0])
+    ];
+    return new CarCategoryDTO(category);
   }
 
   @Override
-  protected DTO handlesearchCar() throws Exception {
-    return null;
+  protected DTO handleSearchCar() throws Exception {
+    return readSearchCarDTOFromScanner();
   }
 
   @Override
   protected DTO handleGetQuantityOfCarsStored() throws Exception {
-    return null;
+    return new NullDTO();
   }
 
   @Override
   protected DTO handleBuyCar() throws Exception {
-    return null;
+    return readSearchCarDTOFromScanner();
+  }
+
+  private SearchCarDTO readSearchCarDTOFromScanner() {
+    String[] inputsReceived = ConsolePrinter.printInputNameAndScan(
+      new String[]{
+        "Pesquisar por (0 - Nome | 1 - Renavan)",
+        "Termo de pesquisa"
+      }, scanner
+    );
+
+    SearchCarKeywordType searchKeywordType = SearchCarKeywordType.
+      values()[Integer.valueOf(inputsReceived[0])];
+
+    return new SearchCarDTO(searchKeywordType, inputsReceived[1]);
   }
 }

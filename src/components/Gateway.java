@@ -126,14 +126,14 @@ public class Gateway implements IGateway {
 
     AuthDTO authData = authenticatedDTO.getAuthData();
     boolean validToken = TokenProcessor.isValid(
-      authData.getToken(), SECRET_KEY, authData.getUserId()
+      authData.getToken(), SECRET_KEY, authData.getUser().getId()
     );
     if(!validToken) {
       throw new AppException("Token de usuário inválido!");
     }
 
     boolean canExecuteOperation = OperationClassifier.
-      userCanExecuteOperation(authData.getUserType(), operation);
+      userCanExecuteOperation(authData.getUser().getType(), operation);
     if(!canExecuteOperation) {
       throw new AppException(
         "O usuário não pode efetuar essa operação!"

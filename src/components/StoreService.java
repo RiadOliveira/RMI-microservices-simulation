@@ -65,11 +65,19 @@ public class StoreService implements IStoreService {
       return new ExceptionDTO("Carro informado não encontrado!");
     }
 
-    findedCar.setAvailableQuantity(
-      findedCar.getAvailableQuantity() + parsedDTO.getUpdateValue()
-    );
+    long updatedQuantity = findedCar.getAvailableQuantity() + 
+      parsedDTO.getUpdateValue();
+    if(updatedQuantity < 0) {
+      return new ExceptionDTO(
+        "O valor de atualização está tornando a quantidade negativa!"
+      );
+    }
 
-    return new MessageDTO("Quantidade do carro atualizada com sucesso!");
+    findedCar.setAvailableQuantity(updatedQuantity);
+    return new MessageDTO(
+      "Quantidade do carro atualizada para " +
+      updatedQuantity + "!"
+    );
   }
 
   @Override
@@ -169,7 +177,7 @@ public class StoreService implements IStoreService {
     for(CarCategory category : CarCategory.values()) {
       for(String name : carsToAdd.get(category)) {
         initialDatabaseCars.add(
-          Car.FromNameAndCategory(name, category)
+          Car.GenerateFromNameAndCategory(name, category)
         );
       }
     }

@@ -31,11 +31,11 @@ public class OperationClassifier {
     RemoteOperation operation
   ) {
     switch(operation) {
-      case LIST_ALL_CARS:
-      case SEARCH_CAR:
-      case GET_QUANTITY_OF_CARS_STORED:
-      case BUY_CAR: return false;
-      default: return true;
+      case CREATE_CAR:
+      case UPDATE_CAR:
+      case PATCH_CAR_QUANTITY:
+      case DELETE_CAR: return true;
+      default: return false;
     }
   }
 }

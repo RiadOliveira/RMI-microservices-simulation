@@ -55,7 +55,7 @@ public class RMIClient<T> implements Runnable {
     }
     
     ConsolePrinter.println(
-      "Servidor " + serverName + " conectado com sucesso!\n"
+      "Servidor " + serverName + " conectado com sucesso!"
     );
     return stub;
   }

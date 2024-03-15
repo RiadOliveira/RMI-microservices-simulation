@@ -45,7 +45,7 @@ public abstract class AppClientOperationHandler {
       RemoteOperation.LIST_ALL_CARS_BY_CATEGORY, this::handleListAllCarsByCategory
     );
     authenticatedHandlers.put(
-      RemoteOperation.SEARCH_CAR, this::handlesearchCar
+      RemoteOperation.SEARCH_CAR, this::handleSearchCar
     );
     authenticatedHandlers.put(
       RemoteOperation.GET_QUANTITY_OF_CARS_STORED, this::handleGetQuantityOfCarsStored
@@ -63,7 +63,7 @@ public abstract class AppClientOperationHandler {
   protected abstract DTO handleDeleteCar() throws Exception;
   protected abstract DTO handleListAllCars() throws Exception;
   protected abstract DTO handleListAllCarsByCategory() throws Exception;
-  protected abstract DTO handlesearchCar() throws Exception;
+  protected abstract DTO handleSearchCar() throws Exception;
   protected abstract DTO handleGetQuantityOfCarsStored() throws Exception;
   protected abstract DTO handleBuyCar() throws Exception;
 }

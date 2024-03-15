@@ -19,37 +19,59 @@ public abstract class Car extends DTO {
   private long availableQuantity;
 
   public Car(
-    String name, CarCategory category,
+    String name, String renavan, CarCategory category,
     short manufacturingYear, double price,
     long availableQuantity
   ) {
     this.id = UUID.randomUUID();
     this.name = name;
-    this.renavan = NumberStringGenerator.generate(11);
+    this.renavan = renavan;
     this.category = category;
     this.manufacturingYear = manufacturingYear;
     this.price = price;
     this.availableQuantity = availableQuantity;
   }
 
-  public static Car FromNameAndCategory(
+  public static Car FromCategory(
+    String name, String renavan, CarCategory category,
+    short manufacturingYear, double price,
+    long availableQuantity
+  ) {
+    switch(category) {
+      case ECONOMIC: return new EconomicCar(
+        name, renavan, manufacturingYear,
+        price, availableQuantity
+      );
+      case EXECUTIVE: return new ExecutiveCar(
+        name, renavan, manufacturingYear,
+        price, availableQuantity
+      );
+      default: return new IntermediaryCar(
+        name, renavan, manufacturingYear,
+        price, availableQuantity
+      );
+    }
+  }
+
+  public static Car GenerateFromNameAndCategory(
     String name, CarCategory category
   ) {
     int nameHash = Math.abs(name.hashCode());
 
+    String renavan = NumberStringGenerator.generate(11);
     short manufacturingYear = (short) (2000 + (nameHash % 24));
     double price = 20000 + (nameHash % 80000);
     long availableQuantity = (nameHash % 10);
 
     switch(category) {
       case ECONOMIC: return new EconomicCar(
-        name, manufacturingYear, price, availableQuantity
+        name, renavan, manufacturingYear, price, availableQuantity
       );
       case EXECUTIVE: return new ExecutiveCar(
-        name, manufacturingYear, price, availableQuantity
+        name, renavan, manufacturingYear, price, availableQuantity
       );
       default: return new IntermediaryCar(
-        name, manufacturingYear, price, availableQuantity
+        name, renavan, manufacturingYear, price, availableQuantity
       );
     }
   }
